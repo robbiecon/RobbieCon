@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Bitcoin Core integration/staging tree
 =====================================
 
@@ -80,3 +81,7 @@ Translations are periodically pulled from Transifex and merged into the git repo
 pull from Transifex would automatically overwrite them again.
 
 Translators should also subscribe to the [mailing list](https://groups.google.com/forum/#!forum/bitcoin-translators).
+=======
+# RobbieCon
+Blockchain related project
+>>>>>>> 4fb277c86a867ef14914bea48fe7520a679ce008
