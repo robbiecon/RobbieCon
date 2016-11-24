@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  robbiecond The robbiecon core server.
+#
+#
+# chkconfig: 345 80 20
+# description: robbiecond
+# processname: robbiecond
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/robbiecond, see below
+if [ -f /etc/sysconfig/robbiecond ]; then
+        . /etc/sysconfig/robbiecond
+fi
+
+RETVAL=0
+
+prog=robbiecond
+# you can override the lockfile via ROBBIECOND_LOCKFILE in /etc/sysconfig/robbiecond
+lockfile=${ROBBIECOND_LOCKFILE-/var/lock/subsys/robbiecond}
+
+# robbiecond defaults to /usr/bin/robbiecond, override with ROBBIECOND_BIN
+robbiecond=${ROBBIECOND_BIN-/usr/bin/robbiecond}
+
+# robbiecond opts default to -disablewallet, override with ROBBIECOND_OPTS
+robbiecond_opts=${ROBBIECOND_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $robbiecond $robbiecond_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

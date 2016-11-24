@@ -1,0 +1,6 @@
+usr/local/bin/robbiecon-qt usr/bin
+share/pixmaps/robbiecon32.xpm usr/share/pixmaps
+share/pixmaps/robbiecon16.xpm usr/share/pixmaps
+share/pixmaps/robbiecon128.png usr/share/pixmaps
+debian/robbiecon-qt.desktop usr/share/applications
+debian/robbiecon-qt.protocol usr/share/kde4/services/

@@ -1,0 +1,81 @@
+policy_module(robbiecon, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type robbiecon_t;
+type robbiecon_exec_t;
+init_daemon_domain(robbiecon_t, robbiecon_exec_t)
+
+permissive robbiecon_t;
+
+type robbiecon_initrc_exec_t;
+init_script_file(robbiecon_initrc_exec_t)
+
+type robbiecon_conf_t;
+files_type(robbiecon_conf_t)
+
+type robbiecon_var_lib_t;
+files_type(robbiecon_var_lib_t)
+
+type robbiecon_var_run_t;
+files_type(robbiecon_var_run_t)
+
+type robbiecon_port_t;
+corenet_port(robbiecon_port_t)
+
+########################################
+#
+# robbiecon local policy
+#
+allow robbiecon_t self:process { fork };
+
+allow robbiecon_t self:fifo_file rw_fifo_file_perms;
+allow robbiecon_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(robbiecon_t, robbiecon_conf_t, robbiecon_conf_t)
+manage_files_pattern(robbiecon_t, robbiecon_conf_t, robbiecon_conf_t)
+
+manage_dirs_pattern(robbiecon_t, robbiecon_var_lib_t, robbiecon_var_lib_t)
+manage_files_pattern(robbiecon_t, robbiecon_var_lib_t, robbiecon_var_lib_t)
+files_var_lib_filetrans(robbiecon_t, robbiecon_var_lib_t, { dir file })
+
+manage_dirs_pattern(robbiecon_t, robbiecon_var_run_t, robbiecon_var_run_t)
+manage_files_pattern(robbiecon_t, robbiecon_var_run_t, robbiecon_var_run_t)
+
+sysnet_dns_name_resolve(robbiecon_t)
+corenet_all_recvfrom_unlabeled(robbiecon_t)
+
+allow robbiecon_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(robbiecon_t)
+corenet_tcp_sendrecv_generic_node(robbiecon_t)
+corenet_tcp_sendrecv_all_ports(robbiecon_t)
+corenet_tcp_bind_generic_node(robbiecon_t)
+
+gen_require(`
+    type robbiecon_port_t;
+')
+allow robbiecon_t robbiecon_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type robbiecon_port_t;
+')
+allow robbiecon_t robbiecon_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(robbiecon_t)
+
+files_read_etc_files(robbiecon_t)
+
+miscfiles_read_localization(robbiecon_t)
+
+sysnet_dns_name_resolve(robbiecon_t)
+
+allow robbiecon_t robbiecon_exec_t:file execute_no_trans;
+allow robbiecon_t self:process setsched;
+corecmd_exec_ls(robbiecon_t)
+corenet_tcp_connect_http_port(robbiecon_t)
+dev_read_urand(robbiecon_t)
+fs_getattr_xattr_fs(robbiecon_t)
+kernel_read_system_state(robbiecon_t)

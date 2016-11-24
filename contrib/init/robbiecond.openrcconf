@@ -1,0 +1,33 @@
+# /etc/conf.d/robbiecond: config file for /etc/init.d/robbiecond
+
+# Config file location
+#ROBBIECOND_CONFIGFILE="/etc/robbiecon/robbiecon.conf"
+
+# What directory to write pidfile to?  (created and owned by $ROBBIECOND_USER)
+#ROBBIECOND_PIDDIR="/var/run/robbiecond"
+
+# What filename to give the pidfile
+#ROBBIECOND_PIDFILE="${ROBBIECOND_PIDDIR}/robbiecond.pid"
+
+# Where to write robbiecond data (be mindful that the blockchain is large)
+#ROBBIECOND_DATADIR="/var/lib/robbiecond"
+
+# User and group to own robbiecond process
+#ROBBIECOND_USER="robbiecon"
+#ROBBIECOND_GROUP="robbiecon"
+
+# Path to robbiecond executable
+#ROBBIECOND_BIN="/usr/bin/robbiecond"
+
+# Nice value to run robbiecond under
+#ROBBIECOND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+ROBBIECOND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for robbiecond to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+ROBBIECOND_SIGTERM_TIMEOUT=60

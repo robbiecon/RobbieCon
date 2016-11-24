@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/robbiecon/.robbiecon" ]; then
+	ROBBIECOND_DEFAULT_DATADIR="/var/lib/robbiecon/.robbiecon"
+else
+	ROBBIECOND_DEFAULT_DATADIR="/var/lib/robbiecond"
+fi
+
+ROBBIECOND_CONFIGFILE=${ROBBIECOND_CONFIGFILE:-/etc/robbiecon/robbiecon.conf}
+ROBBIECOND_PIDDIR=${ROBBIECOND_PIDDIR:-/var/run/robbiecond}
+ROBBIECOND_PIDFILE=${ROBBIECOND_PIDFILE:-${ROBBIECOND_PIDDIR}/robbiecond.pid}
+ROBBIECOND_DATADIR=${ROBBIECOND_DATADIR:-${ROBBIECOND_DEFAULT_DATADIR}}
+ROBBIECOND_USER=${ROBBIECOND_USER:-${ROBBIECON_USER:-robbiecon}}
+ROBBIECOND_GROUP=${ROBBIECOND_GROUP:-robbiecon}
+ROBBIECOND_BIN=${ROBBIECOND_BIN:-/usr/bin/robbiecond}
+ROBBIECOND_NICE=${ROBBIECOND_NICE:-${NICELEVEL:-0}}
+ROBBIECOND_OPTS="${ROBBIECOND_OPTS:-${ROBBIECON_OPTS}}"
+
+name="Robbiecon Core Daemon"
+description="Robbiecon cryptocurrency P2P network daemon"
+
+command="/usr/bin/robbiecond"
+command_args="-pid=\"${ROBBIECOND_PIDFILE}\" \
+		-conf=\"${ROBBIECOND_CONFIGFILE}\" \
+		-datadir=\"${ROBBIECOND_DATADIR}\" \
+		-daemon \
+		${ROBBIECOND_OPTS}"
+
+required_files="${ROBBIECOND_CONFIGFILE}"
+start_stop_daemon_args="-u ${ROBBIECOND_USER} \
+			-N ${ROBBIECOND_NICE} -w 2000"
+pidfile="${ROBBIECOND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${ROBBIECOND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${ROBBIECOND_USER}:${ROBBIECOND_GROUP}" \
+	"${ROBBIECOND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${ROBBIECOND_USER}:${ROBBIECOND_GROUP}" \
+	"${ROBBIECOND_PIDDIR}"
+
+	checkpath -f \
+	-o ${ROBBIECOND_USER}:${ROBBIECOND_GROUP} \
+	-m 0660 \
+	${ROBBIECOND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${ROBBIECOND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run robbiecond."
+		eerror "The setting must appear in ${ROBBIECOND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Robbiecon Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

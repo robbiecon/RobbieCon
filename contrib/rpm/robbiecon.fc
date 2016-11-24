@@ -1,0 +1,8 @@
+/usr/bin/robbiecon-cli		--	gen_context(system_u:object_r:robbiecon_exec_t,s0)
+/usr/sbin/robbiecond		--	gen_context(system_u:object_r:robbiecon_exec_t,s0)
+/usr/lib(64)?/robbiecon/robbiecond		--	gen_context(system_u:object_r:robbiecon_exec_t,s0)
+
+/etc/robbiecon(/.*)?		gen_context(system_u:object_r:robbiecon_conf_t,s0)
+/var/lib/robbiecon(/.*)?		gen_context(system_u:object_r:robbiecon_var_lib_t,s0)
+
+(/var)?/run/robbiecond(/.*)?   gen_context(system_u:object_r:robbiecon_var_run_t,s0)

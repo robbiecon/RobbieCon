@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Robbiecon Core
+Comment=Connect to the Robbiecon P2P Network
+Comment[de]=Verbinde mit dem Robbiecon peer-to-peer Netzwerk
+Comment[fr]=Robbiecon, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Robbiecon, eşten eşe kriptografik sanal para birimi
+Exec=robbiecon-qt %u
+Terminal=false
+Type=Application
+Icon=robbiecon128
+MimeType=x-scheme-handler/robbiecon;
+Categories=Office;Finance;
